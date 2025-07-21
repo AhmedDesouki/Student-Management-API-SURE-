@@ -1,0 +1,6 @@
+@StudentManagementSys_SURE_HostAddress = http://localhost:5080
+
+GET {{StudentManagementSys_SURE_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

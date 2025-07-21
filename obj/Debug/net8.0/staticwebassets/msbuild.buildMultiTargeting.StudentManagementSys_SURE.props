@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\StudentManagementSys_SURE.props" />
+</Project>
