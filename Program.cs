@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using StudentManagementSys_SURE.Models;
+using StudentManagementSys_SURE.Repository;
+using StudentManagementSys_SURE.UnitOfWork;
 
 namespace StudentManagementSys_SURE
 {
@@ -18,7 +20,10 @@ namespace StudentManagementSys_SURE
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddDbContext<StudentManagContext>(op=>op.UseSqlServer(builder.Configuration.GetConnectionString("Appcontext")));
-            
+            //builder.Services.AddScoped<StudentRepository>();
+            //builder.Services.AddScoped<GenericRepository<Student>>();
+            //builder.Services.AddScoped<GenericRepository<Department>>();
+            builder.Services.AddScoped<UnitWork>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

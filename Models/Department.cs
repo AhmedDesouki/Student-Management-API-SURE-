@@ -6,7 +6,7 @@
         public string Name { get; set; }
         public string? ManagerName { get; set; }
 
-        public List<Student> students { get; set; }
+        public List<Student> students { get; set; }=new List<Student>();
 
 
     }

@@ -142,3 +142,4 @@ D:\ITI\StudentManagementSys_SURE\obj\Debug\net8.0\refint\StudentManagementSys_SU
 D:\ITI\StudentManagementSys_SURE\obj\Debug\net8.0\StudentManagementSys_SURE.pdb
 D:\ITI\StudentManagementSys_SURE\obj\Debug\net8.0\StudentManagementSys_SURE.genruntimeconfig.cache
 D:\ITI\StudentManagementSys_SURE\obj\Debug\net8.0\ref\StudentManagementSys_SURE.dll
+D:\ITI\StudentManagementSys_SURE\obj\Debug\net8.0\StudentManagementSys_SURE.sourcelink.json

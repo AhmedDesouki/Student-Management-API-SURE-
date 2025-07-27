@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StudentManagementSys_SURE.DTO;
 using StudentManagementSys_SURE.Models;
+using StudentManagementSys_SURE.Repository;
+using StudentManagementSys_SURE.UnitOfWork;
 
 namespace StudentManagementSys_SURE.Controllers
 {
@@ -10,31 +12,62 @@ namespace StudentManagementSys_SURE.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-        StudentManagContext db;
+        //StudentRepository reps;
+        //GenericRepository<Student> genericReps;
+        ////public StudentController(StudentRepository reps)
+        ////{
+        ////    this.reps=reps;
+        ////}
 
-        public StudentController(StudentManagContext db)
+        //public StudentController(GenericRepository<Student> genericReps, StudentRepository reps)
+        //{
+        //    this.genericReps = genericReps;
+        //    this.reps = reps;
+        //}
+
+        UnitWork unit;
+
+        public StudentController(UnitWork unit) 
         {
-            this.db = db;
+            this.unit = unit;
         }
+
+
         [HttpGet]
-        public List<Student> getall()
+        public IActionResult getAll()
         {
-            return db.Students.ToList();
-        }
-        [HttpGet("{id}")]
-        public IActionResult GetStudentById(int id)
-        {
-           
-            // use eager loading 
-            Student student = db.Students
-                      .Include(s => s.Department)
-                      .FirstOrDefault(s => s.Id == id);
-            if (student == null) { return NotFound();}
-            else {
-            
+            List<Student> students = unit.genericStdReps.selectAll();
+            List<StudentDTO> studentDTOs = new List<StudentDTO>();
+
+            foreach (Student student in students)
+            {
                 StudentDTO studentDTO = new StudentDTO();
                 {
-                    studentDTO.Id= student.Id;
+                    studentDTO.Id = student.Id;
+                    studentDTO.Name = student.Name;
+                    studentDTO.Address = student.Address;
+                    studentDTO.Age = student.Age;
+                    studentDTO.DeptName = student?.Department?.Name;
+
+                };
+                studentDTOs.Add(studentDTO);    
+            }
+
+            return Ok(studentDTOs);
+        }
+        // [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
+        public IActionResult GetStudentById(int id)
+        {
+
+            // use eager loading 
+            Student student = unit.StudentRepository.GetById(id);
+            if (student == null) { return NotFound(); }
+            else {
+
+                StudentDTO studentDTO = new StudentDTO();
+                {
+                    studentDTO.Id = student.Id;
                     studentDTO.Name = student.Name;
                     studentDTO.Address = student.Address;
                     studentDTO.Age = student.Age;
@@ -43,15 +76,42 @@ namespace StudentManagementSys_SURE.Controllers
                 };
 
                 return Ok(studentDTO);
-            }    
+            }
         }
+
+
+        [HttpGet("{name}")]
+        public IActionResult GetStudentByName(string name)
+        {
+
+            // use eager loading 
+            Student student = unit.StudentRepository.GetByName(name);
+            if (student == null) { return NotFound(); }
+            else
+            {
+
+                StudentDTO studentDTO = new StudentDTO();
+                {
+                    studentDTO.Id = student.Id;
+                    studentDTO.Name = student.Name;
+                    studentDTO.Address = student.Address;
+                    studentDTO.Age = student.Age;
+                    studentDTO.DeptName = student.Department.Name;
+
+                };
+
+                return Ok(studentDTO);
+            }
+        }
+
+
 
         [HttpPost]
         public IActionResult AddStudent(Student student) {
             if(student == null) { return BadRequest(); }
             if(!ModelState.IsValid) { return BadRequest(); }
-            db.Students.Add(student);
-            db.SaveChanges();
+            unit.genericStdReps.Add(student);
+            unit.Save();
 
             return CreatedAtAction("GetStudentById", new {id=student.Id},student);
         }
@@ -64,18 +124,18 @@ namespace StudentManagementSys_SURE.Controllers
             if(!ModelState.IsValid) { return BadRequest(); }
             if(student.Id != id) { return BadRequest(); }
 
-            db.Students.Update(student);
-            db.SaveChanges();
+            unit.genericStdReps.Update(student);
+            unit.Save();
             return NoContent();
 
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteStudent(int id) { 
-        Student student=db.Students.Find(id);  
+        public IActionResult DeleteStudent(int id) {
+            Student student = unit.StudentRepository.GetById(id);  
             if(student == null) { return NotFound();}
-            db.Students.Remove(student);
-            db.SaveChanges();
+            unit.genericStdReps.Delete(id);
+            unit.Save();
             return Ok(student);
 
         }
